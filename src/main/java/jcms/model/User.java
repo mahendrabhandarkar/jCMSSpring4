@@ -1,12 +1,12 @@
 package jcms.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.Length;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -50,7 +50,7 @@ public class User implements Serializable {
     private String email;
 
     @Column(name = "password")
-    @Length(min = 8, message = "Your password must contain at least 8 characters.")
+    @Size(min = 8, message = "Your password must contain at least 8 characters.")
     @NonNull
     private String password;
 

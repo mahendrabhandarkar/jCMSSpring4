@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -82,20 +82,20 @@ public class PostController {
 			// Otherwise, return the first page
 			if (isPageParamPresent) {
 				posts = postService.findAll(
-					new PageRequest(
+					PageRequest.of(
 						page.get(),
 						size.get(),
-						new Sort(
+						Sort.by(
 							new Sort.Order(Sort.Direction.DESC, "publicationDate")
 						)
 					)
 				);
 			} else {
 				posts = postService.findAll(
-					new PageRequest(
+					PageRequest.of(
 						1,
 						size.get(),
-						new Sort(
+						Sort.by(
 							new Sort.Order(Sort.Direction.DESC, "publicationDate")
 						)
 					)

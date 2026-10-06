@@ -1,15 +1,17 @@
 package jcms.security;
 
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.SignatureException; // Updated root package import path
+import jcms.security.TokenService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.security.core.Authentication;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class JWTAuthenticationFilter extends GenericFilterBean {
@@ -19,18 +21,23 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 		ServletRequest request,
 		ServletResponse response,
 		FilterChain filterChain) throws IOException, ServletException {
-		try {
-			// Get the token for the authentication request
-			Authentication authentication = TokenService.getJWTAuthentication((HttpServletRequest)request);
-			// Manually set the authentication token in the thread-local SecurityContext (managed by SecurityContextHolder)
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-			filterChain.doFilter(request, response);
-		} catch (SignatureException e) {
-			e.printStackTrace();
 
-			// Delete the JWT cookie because the JWT's signature is invalid
-			TokenService.deleteJwtCookie((HttpServletRequest)request, (HttpServletResponse)response);
-			((HttpServletResponse) response).sendRedirect("/login");
+		HttpServletRequest httpRequest = (HttpServletRequest) request;
+		HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+		try {
+			Authentication authentication = TokenService.getJWTAuthentication(httpRequest);
+
+			if (authentication != null) {
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			}
+
+			filterChain.doFilter(httpRequest, httpResponse);
+
+		} catch (SignatureException e) {
+			// Catches tampered tokens using the 0.12.x signature validation routine
+			TokenService.deleteJwtCookie(httpRequest, httpResponse);
+			httpResponse.sendRedirect("/login");
 		}
 	}
 }

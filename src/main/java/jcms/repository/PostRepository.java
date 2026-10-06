@@ -1,10 +1,10 @@
 package jcms.repository;
 
 import jcms.model.Post;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface PostRepository extends PagingAndSortingRepository<Post, Integer> {
+public interface PostRepository extends JpaRepository<Post, Integer> {
 	List<Post> findAll();
 }

@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class PostServiceImpl implements PostService {
 
 	@CacheEvict(value = "post", key = "#id")
 	public void delete(Integer id) {
-		postRepository.delete(id);
+		postRepository.deleteById(id);
 	}
 
 	public List<Post> findAll() {
@@ -31,7 +32,7 @@ public class PostServiceImpl implements PostService {
 
 	@Cacheable(value = "post", key = "#id", unless = "#result == null")
 	public Post findOne(Integer id) {
-		return postRepository.findOne(id);
+		return postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
 	}
 
 	public void save(Post post) {
